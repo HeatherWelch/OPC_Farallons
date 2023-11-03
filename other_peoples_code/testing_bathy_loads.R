@@ -3,6 +3,7 @@ load("/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization/models/anchov
 
 combined_models
 a=combined_models[[1]][[2]]
+a=combined_models[1:10]
 #1. what is combined models -> do 10 and the average
 #2 go over predictors
 #- 0.3 sd

@@ -193,10 +193,13 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
   for(date in date_range){
     get_date=date
     finaldir=glue("{envdir}/{get_date}")
-      if(length(list.files(finaldir))!=36){
+      if(length(list.files(finaldir))!=38){
       print(glue("ROMS data don't exist for {get_date}, starting download"))
     print(get_date)
 
+    tryCatch(
+      expr = {
+        
     print("**************************************************************************************")
     print(paste0("Starting script batch Get_Env_Data_B_batch.R,"," Time is ",Sys.time()))
     print(date)
@@ -204,11 +207,13 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
       expr = {
   
         ## humpback sst
+        if(!file.exists(glue("{finaldir}/sst_humpback.grd"))){
+          print("humpback sst doesn't exist, downloading")
         sst_url="https://coastwatch.pfeg.noaa.gov/erddap/griddap/jplMURSST41.csv?analysed_sst%5B(2023-08-24T09:00:00Z):1:(2023-08-24T09:00:00Z)%5D%5B(32):1:(49)%5D%5B(-127):1:(-116)%5D"
         file = glue("{intermediatedir}/netcdfs/jplMURSST41_{get_date}.csv")
         print(paste("Beginning download of humpback sst. Placing it in a temp directory: ",intermediatedir,sep=""))
         f = CFILE(file,mode="wb")
-        a=curlPerform(url=urls,writedata=f@ref,noprogress=FALSE, .opts = RCurl::curlOptions(ssl.verifypeer=FALSE))
+        a=curlPerform(url=sst_url,writedata=f@ref,noprogress=FALSE, .opts = RCurl::curlOptions(ssl.verifypeer=FALSE))
         close(f)
         sst=read.csv(file)[, c("longitude", "latitude","analysed_sst")] %>% 
           rasterFromXYZ() 
@@ -216,9 +221,21 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
         sst2=raster::resample(sst,template_humpback)
         extent(sst2)=extent(template_humpback)
         writeRaster(sst2,glue("{finaldir}/sst_humpback.grd"),overwrite=T)
+        }
+      },
+      error = function(e){
+        message(glue("ERDDAP sst not available {get_date}"))
+        print(e)
+      }
+    )
+      
+    tryCatch(
+      expr = {
         
         ## anchovy chl
         #get chl ####
+        if(!file.exists(glue("{finaldir}/l.chl.grd"))){
+          print("chl doesn't exist, downloading")
         chl_url="https://hwelch:HeatherCMEMS2016@nrt.cmems-du.eu/thredds/dodsC/cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
         chl_conn=nc_open(chl_url)
         dates=getTimePosition(chl_conn,get_date)
@@ -235,33 +252,68 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
         }
         
         nc_close(chl_conn)
-        ## ROMS for humpback, anchovy, EPAC     
-  handle_the_data(get_date = get_date, var="sst", template=template, save_var="sst",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="bbv_200", template=template, save_var="bv",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="curl", template=template, save_var="curl",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="ild_05", template=template, save_var="ild",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="ssh", template=template, save_var="ssh",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="su", template=template, save_var="su",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="sustr", template=template, save_var="sustr",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="sv", template=template, save_var="sv",finaldir = finaldir)
-  handle_the_data(get_date = get_date, var="svstr", template=template, save_var="svstr",finaldir = finaldir)
+        }
+      },
+      error = function(e){
+        message(glue("CMEMS chl-a not available {get_date}"))
+        print(e)
+      }
+    )
+        
+        tryCatch(
+          expr = {
+        ## ROMS for humpback, anchovy, EPAC   
+            if(!file.exists(glue("{finaldir}/sst.grd"))){
+  handle_the_data(get_date = get_date, var="sst", template=template, save_var="sst",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/bv.grd"))){
+  handle_the_data(get_date = get_date, var="bbv_200", template=template, save_var="bv",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/curl.grd"))){
+  handle_the_data(get_date = get_date, var="curl", template=template, save_var="curl",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/ild.grd"))){
+  handle_the_data(get_date = get_date, var="ild_05", template=template, save_var="ild",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/ssh.grd"))){
+  handle_the_data(get_date = get_date, var="ssh", template=template, save_var="ssh",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/su.grd"))){      
+  handle_the_data(get_date = get_date, var="su", template=template, save_var="su",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/sustr.grd"))){
+  handle_the_data(get_date = get_date, var="sustr", template=template, save_var="sustr",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/sv.grd"))){
+  handle_the_data(get_date = get_date, var="sv", template=template, save_var="sv",finaldir = finaldir)}
+            
+            if(!file.exists(glue("{finaldir}/svstr.grd"))){
+  handle_the_data(get_date = get_date, var="svstr", template=template, save_var="svstr",finaldir = finaldir)}
   
   eke=(raster(glue("{finaldir}/su.grd"))^2+raster(glue("{finaldir}/sv.grd"))^2)/2 %>%
-    log10();writeRaster(eke,glue("{finaldir}/EKE.grd"),overwrite=T)
+    log();writeRaster(eke,glue("{finaldir}/EKE.grd"),overwrite=T)
   
       },
   error = function(e){
-    message(glue("Variables not available {get_date}"))
+    message(glue("ROMS not available {get_date}"))
     print(e)
   }
     )
-  }
+    
+    },
+    error = function(e){
+      message(glue("ERDDAP sst not available {get_date}"))
+      print(e)
+    }
+    )
+    
+   }
   }
 }
 
 library(tidyverse)
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
 
-date_range=seq(Sys.Date()-100,Sys.Date()-79,by=1) %>% as.character()
+date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
 Get_Env_Data_B_batch(path=path,source_path=source_path,date_range=date_range)
 

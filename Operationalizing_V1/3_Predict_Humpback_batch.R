@@ -11,7 +11,7 @@ path="/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization"
 source_path="/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1"
 ############# ----------------------------> End ################
 
-predict_anchovy <- function(path,source_path,date_range){
+predict_humpback <- function(path,source_path,date_range){
   
   ############ 1. Define directories
   
@@ -33,17 +33,23 @@ predict_anchovy <- function(path,source_path,date_range){
   # latestweeksmootheddir=glue("{outdir}/latest_week_smoothed")
   
   ############ 3. Define global objects
-  template=raster(glue("{path}/static_variables/template.grd"))
-  load(glue("{moddir}/anchovyGAM_updatedMay2023.rda")) #anchGAM
+   template_humpback=read.csv(glue("{staticdir}/humpback/Grid_Nonrectangle_3km_WEAR_bathy.csv"))[, c("lon180", "lat")] %>% 
+     rasterFromXYZ()
+   load(glue("{moddir}/Mn3km_GAM.RData")) #Mn3km_GAM
   
-  distland=readRDS(glue("{staticdir}/anchovy/distLandROMSpoints.rds")) %>% 
-    dplyr::select(lon,lat,distLand) %>% 
+  depth=read.csv(glue("{staticdir}/humpback/Grid_Nonrectangle_3km_WEAR_bathy.csv"))[, c("lon180", "lat","depth")] %>% 
     rasterFromXYZ()
-  distland2 <- raster::resample(distland, template)  
-  extent(distland2)=extent(template)
-  crs(distland2)=crs(template)
-  names(distland2)="distLand"
   
+  predict.gam.null.ck.log.off <- function(x,p.data,...)
+  {
+    if(length(names(x$coefficients)) == 1)
+    {
+      p.resp <- exp(as.numeric(x$coefficients[[1]]) + log(p.data$effort))
+    } else {
+      p.resp <- predict.gam(x, p.data,...)
+    }
+  }
+
   ############ 2. Define time and dynamic directories
   for(date in date_range){
     get_date=date
@@ -52,67 +58,44 @@ predict_anchovy <- function(path,source_path,date_range){
   finaldir=glue("{envdir}/{get_date}") #change for each user
   
   print("**************************************************************************************")
-  print(paste("Starting Anchovy prediction for ",get_date,". Time is ",Sys.time(),sep=""))
+  print(paste("Starting humpback prediction for ",get_date,". Time is ",Sys.time(),sep=""))
   
-  if(!file.exists(glue("{rastersdir}/anchovy_{get_date}.grd"))){
+  if(!file.exists(glue("{rastersdir}/humpback_{get_date}.grd"))){
   
   tryCatch(
     expr = {
-    bv=glue("{finaldir}/bv.grd") %>% 
-      raster()
-    names(bv)="BV"
     
-    ild=glue("{finaldir}/ild.grd") %>% 
+    ild=glue("{finaldir}/ild_humpback.grd") %>% 
       raster()
-      names(ild)="ild"
+      names(ild)="MLD"
       
-    ssh=glue("{finaldir}/ssh.grd") %>% 
+    ssh=glue("{finaldir}/ssh_humpback.grd") %>% 
       raster()
-    names(ssh)="ssh"
+    names(ssh)="SSH"
     
-    sst=glue("{finaldir}/sst.grd") %>% 
+    sst=glue("{finaldir}/sst_humpback.grd") %>% 
       raster()
-      names(sst)="sst"
+      names(sst)="mSST"
     
-    logEKE=glue("{finaldir}/EKE.grd") %>% 
-      raster()
-    names(logEKE)="logEKE"
-    
-    sst_sd=glue("{finaldir}/sst_sd_.07.grd") %>% 
-      raster()
-    names(sst_sd)="sst_sd"
-    
-    ssh_sd=glue("{finaldir}/ssh_sd_.07.grd") %>% 
-      raster()
-    names(ssh_sd)="ssh_sd"
-    
-    chl4th=glue("{finaldir}/l.chl.grd") %>% 
-      raster()
-    names(chl4th)="chl4th"
-    
-    lunar=glue("{finaldir}/lunillum.grd") %>% 
-      raster()
-    names(lunar)="lunar"
-    
-    newpreds=stack(bv,ild,ssh,sst,logEKE,sst_sd,ssh_sd,chl4th,distland2,lunar) %>% 
+    newpreds=stack(ild,ssh,sst,depth) %>% 
       rasterToPoints() %>% as.data.frame() %>% 
-      mutate(ssb=3548420) %>% 
-      mutate(preds=predict(anchGAM,., type = "response"))
+      mutate(effort=1) %>% 
+      mutate(preds=predict.gam.null.ck.log.off(Mn3km_GAM,., type = "response"))
     
     pred_ras=rasterFromXYZ(newpreds %>% dplyr::select(x,y,preds))
-    writeRaster(pred_ras,glue("{rastersdir}/anchovy_{get_date}.grd"),overwrite=T)
+    writeRaster(pred_ras,glue("{rastersdir}/humpback_{get_date}.grd"),overwrite=T)
     
     pred_map=ggplot()+
       geom_tile(data=newpreds,aes(x = x, y = y, fill=preds))+
       scale_fill_gradientn("",colours = pals::parula(100),na.value="white")+
       geom_polygon(data = fortify(maps::map("world",plot=FALSE,fill=TRUE)), aes(x=long, y = lat, group=group),color="black",fill="grey")+
       theme_classic()+xlab(NULL)+ylab(NULL)+
-      coord_sf(xlim = c(-134, -115.5), ylim = c(30,46),expand=F)+
-      ggtitle(glue("Anchovy {get_date}"))+
+      coord_sf(xlim = c(-127, -115.5), ylim = c(30,46),expand=F)+
+      ggtitle(glue("Humpback {get_date}"))+
       theme(legend.position = "bottom",
             legend.key.width = unit(1, 'cm'))
     
-    png(glue("{mapssdir}/anchovy_{get_date}.png"),width=11,height=11,units='cm',res=400,type = "cairo")
+    png(glue("{mapssdir}/humpback_{get_date}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
     par(ps=10)
     par(mar=c(0,0,0,0))
     par(cex=1)
@@ -122,7 +105,7 @@ predict_anchovy <- function(path,source_path,date_range){
 
     },
     error = function(e){
-      message(glue("Some anchovy environmental data was missing for {get_date}"))
+      message(glue("Some humback environmental data was missing for {get_date}"))
       print(e)
     }
   )
@@ -134,11 +117,10 @@ predict_anchovy <- function(path,source_path,date_range){
 }
 
 library(tidyverse)
-
 date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
 
 # date_range=seq(as.Date("2020-05-31"),as.Date("2020-06-02"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
 
-predict_anchovy(path=path,source_path = source_path,date_range=date_range)
+predict_humpback(path=path,source_path = source_path,date_range=date_range)
 

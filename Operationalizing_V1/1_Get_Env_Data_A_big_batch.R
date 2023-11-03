@@ -72,7 +72,8 @@ Get_Env_Data_A <- function(path,source_path,date_range){
 }
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
 
-date_range=seq(Sys.Date()-100,Sys.Date()-79,by=1) %>% as.character()
-
+library(tidyverse)
+date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
+# date_range=seq(as.Date("2020-05-01"),as.Date("2020-06-30"),by=1) %>% as.character()
 Get_Env_Data_A(path=path,source_path = source_path,date_range=date_range)
 
