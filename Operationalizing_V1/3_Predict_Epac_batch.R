@@ -53,8 +53,17 @@ predict_epac <- function(path,source_path,date_range){
   ############ 2. Define time and dynamic directories
   for(date in date_range){
     get_date=date
+    get_date_month=month(as.Date(get_date))
     start_date=as.Date(get_date)-30
+    start_date_month=month(as.Date(start_date))
     print(get_date)
+    
+    ### can only predict april - august
+    okay_start_months=c(3,4,5,6,7,8) ## okay for it to do e.g. april 1st
+    okay_end_months=c(4,5,6,7,8) ## will stop Aug 31st
+    
+    if(start_date_month %in% okay_start_months & get_date_month %in% okay_end_months){
+      print("Get_date is between April and May, making prediction")
     
   finaldir=glue("{envdir}/{get_date}") #change for each user
   
@@ -204,6 +213,7 @@ predict_epac <- function(path,source_path,date_range){
   )
 }
   print("**************************************************************************************")
+  }
   } 
 }
 
@@ -211,8 +221,9 @@ library(tidyverse)
 
 date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
 
- # date_range=seq(as.Date("2020-05-31"),as.Date("2020-06-02"),by=1) %>% as.character()
+ # date_range=seq(as.Date("2023-08-19"),as.Date("2023-08-21"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
 
 predict_epac(path=path,source_path = source_path,date_range=date_range)
 
+ 

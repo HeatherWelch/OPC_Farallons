@@ -137,7 +137,7 @@ library(tidyverse)
 
 date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
 
-# date_range=seq(as.Date("2020-05-31"),as.Date("2020-06-02"),by=1) %>% as.character()
+# date_range=seq(as.Date("2023-08-19"),as.Date("2023-08-21"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
 
 predict_anchovy(path=path,source_path = source_path,date_range=date_range)
