@@ -64,6 +64,7 @@ predict_epac <- function(path,source_path,date_range){
     
     if(start_date_month %in% okay_start_months & get_date_month %in% okay_end_months){
       print("Get_date is between April and May, making prediction")
+      print(glue("start date month is {start_date_month}; end date month is {get_date_month}"))
     
   finaldir=glue("{envdir}/{get_date}") #change for each user
   
@@ -75,9 +76,9 @@ predict_epac <- function(path,source_path,date_range){
   print("**************************************************************************************")
   print(paste("Starting Epac prediction for ",get_date,". Time is ",Sys.time(),sep=""))
   
-  if(!file.exists(glue("{rastersdir}/epac_{get_date}.grd")) || metadata!=31){
+  if(!file.exists(glue("{rastersdir}/epac_{get_date}.grd")) || (metadata!=31 & start_date_month>3)){
     if(!file.exists(glue("{rastersdir}/epac_{get_date}.grd"))){print("File doesn't exist")}
-    if(metadata!=31){print("Prediction being remade - didn't have full month available")}
+    else if(metadata!=31& start_date_month>3){print("Prediction being remade - didn't have full month available")}
   tryCatch(
     expr = {
       
@@ -219,7 +220,7 @@ predict_epac <- function(path,source_path,date_range){
 
 library(tidyverse)
 
-date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
+date_range=seq(as.Date("2023-03-01"),Sys.Date(),by=1) %>% as.character()
 
  # date_range=seq(as.Date("2023-08-19"),as.Date("2023-08-21"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()

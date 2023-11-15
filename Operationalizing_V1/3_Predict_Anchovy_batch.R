@@ -135,7 +135,7 @@ predict_anchovy <- function(path,source_path,date_range){
 
 library(tidyverse)
 
-date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
+date_range=seq(as.Date("2023-03-01"),Sys.Date(),by=1) %>% as.character()
 
 # date_range=seq(as.Date("2023-08-19"),as.Date("2023-08-21"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()

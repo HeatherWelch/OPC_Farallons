@@ -283,12 +283,12 @@ ramp_zone <- function(path,source_path,date_range){
    if(length(hump_dates_missing)>0){
    hump=ras %>%
      grep("humpback",.,value=T) %>%
-     grep(paste(epac_dates_missing,collapse = "|"),.,value = T) %>% 
+     grep(paste(hump_dates_missing,collapse = "|"),.,value = T) %>% 
      stack()
 
    hump_dates=ras %>%
      grep("humpback",.,value=T) %>%
-     grep(paste(epac_dates_missing,collapse = "|"),.,value = T) %>% 
+     grep(paste(hump_dates_missing,collapse = "|"),.,value = T) %>% 
      gsub(glue("{outdir}/rasters"),"",.) %>%
      gsub("/humpback_","",.)%>%
      gsub(".grd","",.)
@@ -313,6 +313,25 @@ ramp_zone <- function(path,source_path,date_range){
      arrange(Date)
 
    write.csv(hump_master,glue("{outdir}/ramp_zone_indicators/humpback_ramp_zone34_indicator.csv"))
+   
+   dat=ggplot(hump_master,aes(x=as.Date(Date),y=value,color=zone))+
+     geom_line()+
+     scale_color_manual("",values=c("RAMP zone 3"= "blue","RAMP zone 4"= "red"))+
+     scale_x_date(breaks="1 month",date_labels = "%b-%Y")+
+     theme_classic()+
+     xlab(NULL)+
+     ylab("Density")+
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+           legend.position = "bottom")+
+     ggtitle("Humpback indicator")
+   
+   png(glue("{outdir}/ramp_zone_indicators/humpback_ramp_zone34_indicator.png"),width=11,height=8,units='cm',res=400,type = "cairo")
+   par(ps=10)
+   par(mar=c(0,0,0,0))
+   par(cex=1)
+   print({dat})
+   # gg_hm
+   dev.off()
    }
    
    ## anchovy #### 
@@ -349,6 +368,25 @@ ramp_zone <- function(path,source_path,date_range){
      arrange(Date)
 
    write.csv(anch_master,glue("{outdir}/ramp_zone_indicators/anchovy_ramp_zone34_indicator.csv"))
+   
+   dat=ggplot(anch_master,aes(x=as.Date(Date),y=value,color=zone))+
+     geom_line()+
+     scale_color_manual("",values=c("RAMP zone 3"= "blue","RAMP zone 4"= "red"))+
+     scale_x_date(breaks="1 month",date_labels = "%b-%Y")+
+     theme_classic()+
+     xlab(NULL)+
+     ylab("Prob. pres.")+
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+           legend.position = "bottom")+
+     ggtitle("Anchovy indicator")
+   
+   png(glue("{outdir}/ramp_zone_indicators/anchovy_ramp_zone34_indicator.png"),width=11,height=8,units='cm',res=400,type = "cairo")
+   par(ps=10)
+   par(mar=c(0,0,0,0))
+   par(cex=1)
+   print({dat})
+   # gg_hm
+   dev.off()
    }
    
    ## epac #### 
@@ -385,6 +423,26 @@ ramp_zone <- function(path,source_path,date_range){
      arrange(Date)
 
    write.csv(epac_master,glue("{outdir}/ramp_zone_indicators/epac_ramp_zone34_indicator.csv"))
+   
+   dat=ggplot(epac_master,aes(x=as.Date(Date),y=value,color=zone))+
+     geom_line()+
+     scale_color_manual("",values=c("RAMP zone 3"= "blue","RAMP zone 4"= "red"))+
+     scale_x_date(breaks="1 month",date_labels = "%b-%Y")+
+     theme_classic()+
+     xlab(NULL)+
+     ylab("CPUE")+
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+           legend.position = "bottom")+
+     ggtitle("EPAC indicator")
+   
+   png(glue("{outdir}/ramp_zone_indicators/epac_ramp_zone34_indicator.png"),width=11,height=8,units='cm',res=400,type = "cairo")
+   par(ps=10)
+   par(mar=c(0,0,0,0))
+   par(cex=1)
+   print({dat})
+   # gg_hm
+   dev.off()
+   
    }
    
    ## bluewhale #### 
@@ -421,6 +479,25 @@ ramp_zone <- function(path,source_path,date_range){
      arrange(Date)
 
    write.csv(bluewhale_master,glue("{outdir}/ramp_zone_indicators/bluewhale_ramp_zone34_indicator.csv"))
+   
+   dat=ggplot(bluewhale_master,aes(x=as.Date(Date),y=value,color=zone))+
+     geom_line()+
+     scale_color_manual("",values=c("RAMP zone 3"= "blue","RAMP zone 4"= "red"))+
+     scale_x_date(breaks="1 month",date_labels = "%b-%Y")+
+     theme_classic()+
+     xlab(NULL)+
+     ylab("Prob. pres.")+
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+           legend.position = "bottom")+
+     ggtitle("Blue whale indicator")
+   
+   png(glue("{outdir}/ramp_zone_indicators/bluewhale_ramp_zone34_indicator.png"),width=11,height=8,units='cm',res=400,type = "cairo")
+   par(ps=10)
+   par(mar=c(0,0,0,0))
+   par(cex=1)
+   print({dat})
+   # gg_hm
+   dev.off()
    }
   
   print("**************************************************************************************")
@@ -429,7 +506,7 @@ ramp_zone <- function(path,source_path,date_range){
 
 library(tidyverse)
 
-date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
+date_range=seq(as.Date("2023-03-01"),Sys.Date(),by=1) %>% as.character()
 
 # date_range=seq(as.Date("2020-05-31"),as.Date("2020-06-02"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()

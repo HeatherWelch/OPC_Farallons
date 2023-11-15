@@ -314,6 +314,6 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
 library(tidyverse)
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
 
-date_range=seq(as.Date("2023-05-01"),Sys.Date(),by=1) %>% as.character()
+date_range=seq(as.Date("2023-03-01"),Sys.Date(),by=1) %>% as.character()
 Get_Env_Data_B_batch(path=path,source_path=source_path,date_range=date_range)
 

@@ -47,6 +47,17 @@ two_week <- function(path,source_path,date_range){
     
     ## epac ####
     name="epac"
+    if(file.exists(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))){
+      metadata=read.csv(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv")) %>% 
+        pull(n_days_w_data) %>% mean()
+    }else{metadata=0}
+    
+    if(metadata!=14){
+      if(metadata==0){
+        print(glue("Two week raster doesn't exist for {name}, creating"))}
+      else if(metadata>0&metadata<14){
+        print(glue("Two week raster was missing data for {name}, re-creating"))}
+    
     ras=list.files(glue("{outdir}/rasters"),pattern=name,full.names = T) %>% 
       grep(".grd",.,value=T) %>% 
       grep(paste(sub_range,collapse = "|"),.,value=T)
@@ -95,9 +106,21 @@ two_week <- function(path,source_path,date_range){
     
     write.csv(metadata,glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))
     }
+    }
     
     ## bluewhale ####
     name="bluewhale"
+    if(file.exists(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))){
+      metadata=read.csv(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv")) %>% 
+        pull(n_days_w_data) %>% mean()
+    }else{metadata=0}
+    
+    if(metadata!=14){
+      if(metadata==0){
+        print(glue("Two week raster doesn't exist for {name}, creating"))}
+      else if(metadata>0&metadata<14){
+        print(glue("Two week raster was missing data for {name}, re-creating"))}
+      
     ras=list.files(glue("{outdir}/rasters"),pattern=name,full.names = T) %>% 
       grep(".grd",.,value=T) %>% 
       grep(paste(sub_range,collapse = "|"),.,value=T)
@@ -145,10 +168,22 @@ two_week <- function(path,source_path,date_range){
       )
       
       write.csv(metadata,glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))
+    }
     }
     
     ## anchovy ####
     name="anchovy"
+    if(file.exists(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))){
+      metadata=read.csv(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv")) %>% 
+        pull(n_days_w_data) %>% mean()
+    }else{metadata=0}
+    
+    if(metadata!=14){
+      if(metadata==0){
+        print(glue("Two week raster doesn't exist for {name}, creating"))}
+      else if(metadata>0&metadata<14){
+        print(glue("Two week raster was missing data for {name}, re-creating"))}
+      
     ras=list.files(glue("{outdir}/rasters"),pattern=name,full.names = T) %>% 
       grep(".grd",.,value=T) %>% 
       grep(paste(sub_range,collapse = "|"),.,value=T)
@@ -197,9 +232,21 @@ two_week <- function(path,source_path,date_range){
       
       write.csv(metadata,glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))
     }
+    }
     
     ## humpback ####
     name="humpback"
+    if(file.exists(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))){
+      metadata=read.csv(glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv")) %>% 
+        pull(n_days_w_data) %>% mean()
+    }else{metadata=0}
+    
+    if(metadata!=14){
+      if(metadata==0){
+        print(glue("Two week raster doesn't exist for {name}, creating"))}
+      else if(metadata>0&metadata<14){
+        print(glue("Two week raster was missing data for {name}, re-creating"))}
+      
     ras=list.files(glue("{outdir}/rasters"),pattern=name,full.names = T) %>% 
       grep(".grd",.,value=T) %>% 
       grep(paste(sub_range,collapse = "|"),.,value=T)
@@ -248,6 +295,7 @@ two_week <- function(path,source_path,date_range){
       
       write.csv(metadata,glue("{outdir}/two_week_metadata/{name}_metadata_{get_date}.csv"))
     }
+    }
   
   print("**************************************************************************************")
   } 
@@ -255,7 +303,7 @@ two_week <- function(path,source_path,date_range){
 
 library(tidyverse)
 
-date_range=seq(Sys.Date()-130,Sys.Date()-100,by=1) %>% as.character()
+date_range=seq(as.Date("2023-03-01"),Sys.Date(),by=1) %>% as.character()
 
 # date_range=seq(as.Date("2020-05-31"),as.Date("2020-06-02"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
