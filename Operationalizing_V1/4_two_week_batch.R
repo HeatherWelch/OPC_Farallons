@@ -70,7 +70,7 @@ two_week <- function(path,source_path,date_range){
     
     ## raster
     ras_mean=stack(ras) %>% mean()
-    writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.grd"),overwrite=T)
+    writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{start_date}-end{get_date}.grd"),overwrite=T)
     
     ## map
     df_plot=rasterToPoints(ras_mean) %>% 
@@ -82,11 +82,11 @@ two_week <- function(path,source_path,date_range){
       geom_polygon(data = fortify(maps::map("world",plot=FALSE,fill=TRUE)), aes(x=long, y = lat, group=group),color="black",fill="grey")+
       theme_classic()+xlab(NULL)+ylab(NULL)+
       coord_sf(xlim = c(-127, -115.5), ylim = c(30,46),expand=F)+
-      ggtitle(glue("{name} \n{ras_dates[1]} to {ras_dates[length(ras_dates)]}"))+
+      ggtitle(glue("{name} \n{start_date} to {get_date}"))+
       theme(legend.position = "bottom",
             legend.key.width = unit(1, 'cm'))
     
-    png(glue("{outdir}/two_week_maps/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
+    png(glue("{outdir}/two_week_maps/{name}_start{start_date}-end{get_date}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
     par(ps=10)
     par(mar=c(0,0,0,0))
     par(cex=1)
@@ -133,7 +133,7 @@ two_week <- function(path,source_path,date_range){
       
       ## raster
       ras_mean=stack(ras) %>% mean()
-      writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.grd"),overwrite=T)
+      writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{start_date}-end{get_date}.grd"),overwrite=T)
       
       ## map
       df_plot=rasterToPoints(ras_mean) %>% 
@@ -145,11 +145,11 @@ two_week <- function(path,source_path,date_range){
         geom_polygon(data = fortify(maps::map("world",plot=FALSE,fill=TRUE)), aes(x=long, y = lat, group=group),color="black",fill="grey")+
         theme_classic()+xlab(NULL)+ylab(NULL)+
         coord_sf(xlim = c(-134, -115.5), ylim = c(30,46),expand=F)+
-        ggtitle(glue("{name} \n{ras_dates[1]} to {ras_dates[length(ras_dates)]}"))+
+        ggtitle(glue("{name} \n{start_date} to {get_date}"))+
         theme(legend.position = "bottom",
               legend.key.width = unit(1, 'cm'))
       
-      png(glue("{outdir}/two_week_maps/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
+      png(glue("{outdir}/two_week_maps/{name}_start{start_date}-end{get_date}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
       par(ps=10)
       par(mar=c(0,0,0,0))
       par(cex=1)
@@ -196,7 +196,7 @@ two_week <- function(path,source_path,date_range){
       
       ## raster
       ras_mean=stack(ras) %>% mean()
-      writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.grd"),overwrite=T)
+      writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{start_date}-end{get_date}.grd"),overwrite=T)
       
       ## map
       df_plot=rasterToPoints(ras_mean) %>% 
@@ -208,11 +208,11 @@ two_week <- function(path,source_path,date_range){
         geom_polygon(data = fortify(maps::map("world",plot=FALSE,fill=TRUE)), aes(x=long, y = lat, group=group),color="black",fill="grey")+
         theme_classic()+xlab(NULL)+ylab(NULL)+
         coord_sf(xlim = c(-134, -115.5), ylim = c(30,46),expand=F)+
-        ggtitle(glue("{name} \n{ras_dates[1]} to {ras_dates[length(ras_dates)]}"))+
+        ggtitle(glue("{name} \n{start_date} to {get_date}"))+
         theme(legend.position = "bottom",
               legend.key.width = unit(1, 'cm'))
       
-      png(glue("{outdir}/two_week_maps/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
+      png(glue("{outdir}/two_week_maps/{name}_start{start_date}-end{get_date}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
       par(ps=10)
       par(mar=c(0,0,0,0))
       par(cex=1)
@@ -259,7 +259,7 @@ two_week <- function(path,source_path,date_range){
       
       ## raster
       ras_mean=stack(ras) %>% mean()
-      writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.grd"),overwrite=T)
+      writeRaster(ras_mean,glue("{outdir}/two_week_rasters/{name}_start{start_date}-end{get_date}.grd"),overwrite=T)
       
       ## map
       df_plot=rasterToPoints(ras_mean) %>% 
@@ -271,11 +271,11 @@ two_week <- function(path,source_path,date_range){
         geom_polygon(data = fortify(maps::map("world",plot=FALSE,fill=TRUE)), aes(x=long, y = lat, group=group),color="black",fill="grey")+
         theme_classic()+xlab(NULL)+ylab(NULL)+
         coord_sf(xlim = c(-127, -115.5), ylim = c(30,46),expand=F)+
-        ggtitle(glue("{name} \n{ras_dates[1]} to {ras_dates[length(ras_dates)]}"))+
+        ggtitle(glue("{name} \n{start_date} to {get_date}"))+
         theme(legend.position = "bottom",
               legend.key.width = unit(1, 'cm'))
       
-      png(glue("{outdir}/two_week_maps/{name}_start{ras_dates[1]}-end{ras_dates[length(ras_dates)]}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
+      png(glue("{outdir}/two_week_maps/{name}_start{start_date}-end{get_date}.png"),width=8,height=11,units='cm',res=400,type = "cairo")
       par(ps=10)
       par(mar=c(0,0,0,0))
       par(cex=1)
