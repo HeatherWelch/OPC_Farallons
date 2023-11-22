@@ -1,0 +1,27 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2758
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\csgray\c0;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #!/bin/bash\
+\
+# run OPC tool\
+SOURCE_DIR=
+\f1\fs22 \cf2 \CocoaLigature0 /Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1
+\f0\fs24 \cf0 \CocoaLigature1 \
+FILE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization\
+\
+cd $SOURCE_DIR\
+Rscript 1_Get_Env_Data_A_big_batch.R\
+Rscript 2_Get_Env_Data_B_big_batch.R\
+Rscript 3_Predict_Anchovy_batch.R\
+Rscript 3_Predict_bluewhale_batch.R\
+Rscript 3_Predict_Epac_batch.R\
+Rscript 3_Predict_Humpback_batch.R\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 Rscript 4_two_week_batch.R\
+Rscript 5_ramp_zone_batch.R\
+Rscript 6_most_recent.R\
+Rscript AutoSync.R}

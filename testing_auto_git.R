@@ -1,0 +1,49 @@
+# https://www.techielass.com/convert-a-folder-to-a-git-repository/
+cd /Users/heatherwelch/Dropbox/OPC_Farallons/operationalization/end_products
+git init
+git add .
+git commit -m "add my files"
+git remote add origin https://github.com/HeatherWelch/OPC_Farallons_end_products_final
+# git branch --set-upstream-to=origin/ main
+# git pull --set-upstream origin main
+# git pull origin main
+git pull origin main --allow-unrelated-histories
+# https://stackoverflow.com/questions/19085807/please-enter-a-commit-message-to-explain-why-this-merge-is-necessary-especially
+# git config pull.rebase false 
+git push -u origin main
+username: HeatherWelch
+password: personal access token (stickies)
+
+## auto sync
+# https://github.com/GitJournal/git-auto-sync
+git config --global user.name "Heather Welch"
+git config --global user.email "heather.welch@noaa.gov"
+git-auto-sync sync
+git-auto-sync daemon add 
+git-auto-sync daemon status
+git-auto-sync daemon remove 
+
+setwd("/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization/end_products")
+system("git-auto-sync sync")
+
+
+https://github.com/HeatherWelch/OPC_Farallons_end_products/main
+
+
+## crons 
+1. Open terminal\
+2. Create new cron tab using nano as an editor:\
+env EDITOR=nano crontab -e\
+3. Create cron job, format = (timing), pathway to Rscript, pathway to scripttorun.r:\
+\
+3_Get_Env_Data_B can be run as many times as desired over the course of the day: each time it runs it will see what env data is missing, try to aquire it\
+and then run ecocast once it has it. It will only run EcoCast if no final products are available, so it will never overwrite final products\
+\
+if you don't know where Rscript is, enter : which Rscript into terminal\
+4. control o (saves new line of text)\
+5. hit return (writes new line of text to cron tab)\
+6. control x (exits out of cron tab)\
+
+## running an exe in terminal
+give cron, terminal, and bash full disk access
+The file run_OPC_farallons2.txt needs to have execute permissions if it doesn't already. ( chmod +x run_OPC_farallons2.txt )

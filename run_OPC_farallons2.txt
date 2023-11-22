@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run OPC tool
-SOURCE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1
+SOURCE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V2
 FILE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization
 
 cd $SOURCE_DIR
@@ -12,6 +12,5 @@ Rscript 3_Predict_bluewhale_batch.R
 Rscript 3_Predict_Epac_batch.R
 Rscript 3_Predict_Humpback_batch.R
 Rscript 4_two_week_batch.R
-Rscript 5_ramp_zone_batch.R
-Rscript 6_most_recent.R
+Rscript 5_ramp_zone_batch.R 
 Rscript AutoSync.R
