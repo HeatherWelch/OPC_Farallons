@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# run OPC tool
+SOURCE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V2
+FILE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization
+
+cd $SOURCE_DIR
+git-auto-sync sync
+
