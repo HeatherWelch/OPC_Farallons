@@ -4,6 +4,6 @@
 SOURCE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V2
 FILE_DIR=/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization
 
-cd $SOURCE_DIR
-git-auto-sync sync
+cd /Users/heatherwelch/Dropbox/OPC_Farallons/operationalization/end_products_final
+/opt/homebrew/bin/git-auto-sync sync
 
