@@ -29,16 +29,18 @@ system("git-auto-sync sync")
 
 https://github.com/HeatherWelch/OPC_Farallons_end_products/main
 
+### important:
+1. Allow terminal, bash, and cron full disk access
 
 ## crons 
 1. Open terminal\
 2. Create new cron tab using nano as an editor:\
 env EDITOR=nano crontab -e\
 3. Create cron job, format = (timing), pathway to Rscript, pathway to scripttorun.r:\
-\
-3_Get_Env_Data_B can be run as many times as desired over the course of the day: each time it runs it will see what env data is missing, try to aquire it\
-and then run ecocast once it has it. It will only run EcoCast if no final products are available, so it will never overwrite final products\
-\
+52 11 * * * /Users/EcoCast/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V2/run_OPC_farallons_annex > /Users/EcoCast/Dropbox/OPC_Farallons/operationalization/intermediate/cron_logs/opc_cron_log_annex 2>&1
+05 12 * * * rscript /Users/EcoCast/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V2/AutoSync.R
+
+
 if you don't know where Rscript is, enter : which Rscript into terminal\
 4. control o (saves new line of text)\
 5. hit return (writes new line of text to cron tab)\

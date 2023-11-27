@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# run OPC tool
+SOURCE_DIR=/Users/EcoCast/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V2
+FILE_DIR=/Users/EcoCast/Dropbox/OPC_Farallons/operationalization
+
+cd $SOURCE_DIR
+/usr/local/bin/Rscript 1_Get_Env_Data_A_big_batch.R
+/usr/local/bin/Rscript 2_Get_Env_Data_B_big_batch.R
+/usr/local/bin/Rscript 3_Predict_Anchovy_batch.R
+/usr/local/bin/Rscript 3_Predict_bluewhale_batch.R
+/usr/local/bin/Rscript 3_Predict_Epac_batch.R
+/usr/local/bin/Rscript 3_Predict_Humpback_batch.R
+/usr/local/bin/Rscript 4_two_week_batch.R
+/usr/local/bin/Rscript 5_ramp_zone_batch.R 
+
+
