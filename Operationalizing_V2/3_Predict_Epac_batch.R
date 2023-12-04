@@ -85,7 +85,10 @@ predict_epac <- function(path,source_path,date_range){
   
   if(!file.exists(glue("{rastersdir}/{year}/{month}/epac_{get_date}.grd")) || (metadata!=31 & start_date_month>3)){
     if(!file.exists(glue("{rastersdir}/{year}/{month}/epac_{get_date}.grd"))){print("File doesn't exist")}
-    else if(metadata!=31& start_date_month>3){print("Prediction being remade - didn't have full month available")}
+    else if(metadata!=31& start_date_month>3){print("Prediction being remade - didn't have full month available")
+      file.remove(read.csv(glue("{outdir}/epac_metadata/{year}/{month}/metadata_{get_date}.csv"))) ## delete so git will register new file
+      file.remove(glue("{rastersdir}/{year}/{month}/epac_{get_date}.grd"))
+      }
   tryCatch(
     expr = {
       

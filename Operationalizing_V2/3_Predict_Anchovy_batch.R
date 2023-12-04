@@ -1,4 +1,4 @@
-#######Get_Env_Data A - OPC
+ #######Get_Env_Data A - OPC
 # Get data sequence number one : Create final and temporary envdirs, acquire all static variables
 # ONLY RUN ONCE AT BEGINNING OF DAY
 #adapted from EcoCast by Heather Welch (NOAA/UCSC) 
