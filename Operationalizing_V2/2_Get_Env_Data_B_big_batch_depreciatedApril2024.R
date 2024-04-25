@@ -12,10 +12,6 @@ path="/Users/EcoCast/Dropbox/OPC_Farallons/operationalization"
 # source_path="/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1"
 source_path="/Users/EcoCast/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1"
 
-## path to copernicus toolbox
-# path_copernicus_marine_toolbox = "/Users/heatherwelch/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
-path_copernicus_marine_toolbox = "/Users/EcoCast/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
-
 ############# ----------------------------> End ################
 
 Get_Env_Data_B_batch=function(path,source_path,date_range){
@@ -108,8 +104,12 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
     }
     
   }
-  examine_times=function(conn,get_date){
-    
+  getTimePosition <- function(conn,get_date){
+    # get time index for a given date from time axis in an opendap connection. Only works for a few examples of time units.
+    # kludgy, should use udunits library, but works for now
+    #parameters
+    ## conn: netcdf file or remote opendap connection, obtained with nc_open
+    ## get_date: date to get index for "yyyy-mm-dd", example: get_date="2022-10-11"
     ntimes=conn$dim$time$len
     times=conn$dim$time$vals
     timeUnits=conn$dim$time$units
@@ -124,24 +124,19 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
     }
     # seconds since yyyy-mm-dd hh:mm:ss
     if(tinc=="seconds si"){
-      if(punct=="-")timeOrigin=substr(timeUnits,tulen-9,tulen) ## for time units like "seconds since yyyy-mm-dd"
-      if(punct==":")timeOrigin=substr(timeUnits,tulen-18,tulen-9) ## for time units like "seconds since 1981-01-01 00:00:00"
+      timeOrigin=substr(timeUnits,tulen-18,tulen-9) ## for time units like "seconds since 1981-01-01 00:00:00"
       times_date=as.POSIXct(times,origin = timeOrigin,tz = "UTC") %>% as.Date()
     }
     # hours since yyyy-mm-dd hh:mm:ss
     if(tinc=="hours sinc"){
-      if(punct=="-")timeOrigin=substr(timeUnits,tulen-9,tulen) ## for time units like "hours since yyyy-mm-dd"
-      if(punct==":")timeOrigin=substr(timeUnits,tulen-18,tulen-9) ## for time units like "hours since 1981-01-01 00:00:00"
+      timeOrigin=substr(timeUnits,tulen-18,tulen-9) ## for time units like "hours since 1981-01-01 00:00:00"
       times_date=as.POSIXct(times*3600,origin = timeOrigin,tz = "UTC") %>% as.Date()
     }
-    
     nearest_date_position=(which.min(abs(times_date-as.Date(get_date))))
-    nearest_date=times_date[nearest_date_position] 
-    how_different=difftime(as.Date(get_date),nearest_date,units = "days") %>% as.numeric(.,units="days")# %>% round() %>%  as.character()
+    nearest_date=times_date[nearest_date_position]
+    how_different=difftime(as.Date(get_date),nearest_date,units = "days") %>% as.numeric(.,units="days")
     notation_date=nearest_date	
-    # return(c(nearest_date_position,nearest_date,how_different,notation_date))
-    return(list(nearest_date_position,nearest_date,how_different,notation_date))
-    
+    return(c(nearest_date_position,nearest_date,how_different,notation_date))
   }
   getDepthPosition <- function(conn,depth){
     # returns nearest depth index to given depth from depth axis in an opendap connection
@@ -152,6 +147,42 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
     depths=conn$dim$depth$vals
     nearest_depth_position=(which.min(abs(depths-depth)))
     return(nearest_depth_position)
+  }
+  subsetLatLon <- function(conn,var,box,date_position,depth_start,ndepths){
+    #returns a raster of data extracted from a netcdf file or opendap connection
+    #parameters
+    ## conn: netcdf file or remote opendap connection, obtained with nc_open
+    ## box: region to extract
+    ##	vector of xmin,xmax,ymin,ymax ** xmin xmax always expressed in 0-360 degrees **
+    ##	data can be 0-360 or -180- 180, latitude can be north to south and can extract across dateline
+    ## example:  box=c(100,295,-60,60)
+    ## date_position: date index to extract
+    ## depth_start: depth index to start the extract, or if no depth set to -1
+    ## ndepths: number of depths to extract, ignored if depth_start set to -1
+    ## subsetting lat
+    lat_start=which.min(abs(conn$dim$lat$vals-box[4]))
+    lat_end=which.min(abs(conn$dim$lat$vals-box[3]))
+    lat_n_to_s=TRUE
+    
+    lat <- conn$dim$lat$vals[lat_start:lat_end]
+    nrows <- length(lat);
+    
+    x1=box[1] 
+    x2=box[2]
+    lon_start1=which.min(abs(conn$dim$lon$vals-x1))
+    lon_end1=which.min(abs(conn$dim$lon$vals-x2))
+    lon1 <- conn$dim$lon$vals[lon_start1:lon_end1]
+    ncols1 <- length(lon1)
+    tmp.array1 <- ncvar_get(conn, varid=var,c(lon_start1,lat_start,date_position),c(ncols1,nrows,1))
+    r <- raster(t(tmp.array1),xmn=range(lon1)[1],xmx=range(lon1)[2],ymn=range(lat)[1],ymx=range(lat)[2],crs=CRS("+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"))
+    
+    
+    if(!lat_n_to_s){
+      return(flip(r))
+    }
+    else{
+      return(r)
+    }
   }
   
   ############ 4. define global objects
@@ -208,24 +239,13 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
         #get chl ####
         if(!file.exists(glue("{finaldir}/l.chl.grd"))){
           print("chl doesn't exist, downloading")
-          productId = "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
-          variable <- c("CHL")
-          out_name=glue("{productId}_{variable}_{get_date}")
-          out_name_time_metadata=glue("{productId}_{variable}_{get_date}_metadata")
-          
-          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {Sys.Date()-7} -x 5.0 -X 10.0 -y 38.0 -Y 42.0 --variable {variable} -o {intermediatedir} -f {out_name_time_metadata} --force-download")   
-          system(command, intern = TRUE)
-          
-          if(file.exists(glue("{intermediatedir}/{out_name_time_metadata}.nc"))){
-            times_conn=nc_open(glue("{intermediatedir}/{out_name_time_metadata}.nc"))
-            dates=examine_times(conn=times_conn,get_date)
-            nearest_date_position=dates[[1]];nearest_date=dates[[2]];how_different=dates[[3]];notation_date=dates[[4]]
-          
+        chl_url="https://hwelch:HeatherCMEMS2016@nrt.cmems-du.eu/thredds/dodsC/cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
+        chl_conn=nc_open(chl_url)
+        dates=getTimePosition(chl_conn,get_date)
+        nearest_date_position=dates[1];nearest_date=dates[2];how_different=dates[3];notation_date=dates[4]
+        nearest_depth_position=-1
         if (how_different<8){
-          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {nearest_date} -T {nearest_date} --variable {variable} -o {intermediatedir} -f {out_name} --force-download")   
-          system(command, intern = TRUE)
-          
-          r=raster(glue("{intermediatedir}/{out_name}.nc"))
+          r=subsetLatLon(chl_conn,"CHL",box,nearest_date_position,nearest_depth_position,0)
           r1=r^.25 ## barb's math
           r2 <- raster::resample(r1, template)  
           extent(r2)=extent(template)
@@ -233,8 +253,8 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
         } else{
           print(glue("Not grabbing CHL data. Most recent data is from {nearest_date}, which is lagged behind target date by {how_different} days")) 
         }
-          }
- 
+        
+        nc_close(chl_conn)
         }
       },
       error = function(e){
