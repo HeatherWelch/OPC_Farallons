@@ -134,6 +134,6 @@ Get_Env_Data_A <- function(path,source_path,date_range){
 
 library(tidyverse)
 date_range=seq(as.Date("2023-03-01"),Sys.Date(),by=1) %>% as.character()
-# date_range=seq(as.Date("2020-05-01"),as.Date("2020-06-30"),by=1) %>% as.character()
+# date_range=seq(as.Date("2020-05-02"),as.Date("2020-05-30"),by=2) %>% as.character()
 Get_Env_Data_A(path=path,source_path = source_path,date_range=date_range)
 

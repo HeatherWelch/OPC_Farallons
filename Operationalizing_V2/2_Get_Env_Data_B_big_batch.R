@@ -85,7 +85,7 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
     
     ## different resolutions for humpback ILD
     if(var=="ild_05"){
-      r3_hump <- raster::resample(r2, template_humpback)  
+      r3_hump <- raster::resample(r2, template_humpback,method="ngb")  
       extent(r3_hump)=extent(template_humpback)
       # return(r3)
       writeRaster(r3_hump,glue("{finaldir}/{save_var}_humpback.grd"),overwrite=T)
@@ -93,7 +93,7 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
     
     ## different resolutions for humpback SSH and bias correction
     if(var=="ssh"){
-      r3_hump <- raster::resample(r2, template_humpback) + 0.035
+      r3_hump <- raster::resample(r2, template_humpback,method="ngb") + 0.035
       extent(r3_hump)=extent(template_humpback)
       # return(r3)
       writeRaster(r3_hump,glue("{finaldir}/{save_var}_humpback.grd"),overwrite=T)
