@@ -10,7 +10,7 @@ path="/Users/EcoCast/Dropbox/OPC_Farallons/operationalization"
 
 ## path to the load libraries r script ("/loadlib-new.R") will be appended to this path in the function)
 # source_path="/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1"
-source_path="/Users/EcoCast/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1"
+source_path="/Users/EcoCast/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V2"
 
 ## path to copernicus toolbox
 # path_copernicus_marine_toolbox = "/Users/heatherwelch/miniforge3/envs/copernicusmarine/bin/copernicusmarine"
