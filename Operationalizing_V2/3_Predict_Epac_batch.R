@@ -1,7 +1,7 @@
 #######Get_Env_Data A - OPC
 # Get data sequence number one : Create final and temporary envdirs, acquire all static variables
 # ONLY RUN ONCE AT BEGINNING OF DAY
-#adapted from EcoCast by Heather Welch (NOAA/UCSC) 
+#adapted from EcoCast by Heather Welch (NOAA/UCSC)  
 
 ############# ----------------------------> Paths to change ################
 ## path to the top directory of this project - doesn't matter what this folder is called, but something in /home/hwelch
