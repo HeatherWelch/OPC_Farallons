@@ -14,6 +14,7 @@ pkgTest <- function(x)
   }
 }
 
+pkgTest("terra")
 pkgTest("RCurl")
 pkgTest("pals")
 pkgTest("sp")
