@@ -14,6 +14,12 @@ git push -u origin main
 username: HeatherWelch
 password: personal access token (stickies)
 
+## commiting new stuff in folder
+cd /Users/heatherwelch/Dropbox/OPC_Farallons/operationalization/end_products
+git add .
+git commit -m "Added foo to the bar1"
+git push
+
 ## auto sync
 # https://github.com/GitJournal/git-auto-sync
 git config --global user.name "Heather Welch"
