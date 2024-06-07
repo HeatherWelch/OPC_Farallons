@@ -203,48 +203,48 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
       }
     )
       
-    tryCatch(
-      expr = {
-        
-        ## anchovy chl
-        #get chl ####
-        if(!file.exists(glue("{finaldir}/l.chl.grd"))){
-          print("chl doesn't exist, downloading")
-          productId = "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
-          variable <- c("CHL")
-          out_name=glue("{productId}_{variable}_{get_date}")
-          out_name_time_metadata=glue("{productId}_{variable}_{get_date}_metadata")
-          
-          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {Sys.Date()-7} -x 5.0 -X 10.0 -y 38.0 -Y 42.0 --variable {variable} -o {intermediatedir} -f {out_name_time_metadata} --force-download")   
-          system(command, intern = TRUE)
-          
-          if(file.exists(glue("{intermediatedir}/{out_name_time_metadata}.nc"))){
-            times_conn=nc_open(glue("{intermediatedir}/{out_name_time_metadata}.nc"))
-            dates=examine_times(conn=times_conn,get_date)
-            nearest_date_position=dates[[1]];nearest_date=dates[[2]];how_different=dates[[3]];notation_date=dates[[4]]
-          nc_close(times_conn)
-            
-        if (how_different<8){
-          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {nearest_date} -T {nearest_date} --variable {variable} -o {intermediatedir} -f {out_name} --force-download")   
-          system(command, intern = TRUE)
-          
-          r=raster(glue("{intermediatedir}/{out_name}.nc"))
-          r1=r^.25 ## barb's math
-          r2 <- raster::resample(r1, template)  
-          extent(r2)=extent(template)
-          writeRaster(r2,glue("{finaldir}/l.chl.grd"),overwrite=T)
-        } else{
-          print(glue("Not grabbing CHL data. Most recent data is from {nearest_date}, which is lagged behind target date by {how_different} days")) 
-        }
-          }
- 
-        }
-      },
-      error = function(e){
-        message(glue("CMEMS chl-a not available {get_date}"))
-        print(e)
-      }
-    )
+    # tryCatch(
+    #   expr = {
+    #     
+    #     ## anchovy chl
+    #     #get chl ####
+    #     if(!file.exists(glue("{finaldir}/l.chl.grd"))){
+    #       print("chl doesn't exist, downloading")
+    #       productId = "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
+    #       variable <- c("CHL")
+    #       out_name=glue("{productId}_{variable}_{get_date}")
+    #       out_name_time_metadata=glue("{productId}_{variable}_{get_date}_metadata")
+    #       
+    #       command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {Sys.Date()-7} -x 5.0 -X 10.0 -y 38.0 -Y 42.0 --variable {variable} -o {intermediatedir} -f {out_name_time_metadata} --force-download")   
+    #       system(command, intern = TRUE)
+    #       
+    #       if(file.exists(glue("{intermediatedir}/{out_name_time_metadata}.nc"))){
+    #         times_conn=nc_open(glue("{intermediatedir}/{out_name_time_metadata}.nc"))
+    #         dates=examine_times(conn=times_conn,get_date)
+    #         nearest_date_position=dates[[1]];nearest_date=dates[[2]];how_different=dates[[3]];notation_date=dates[[4]]
+    #       nc_close(times_conn)
+    #         
+    #     if (how_different<8){
+    #       command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {nearest_date} -T {nearest_date} --variable {variable} -o {intermediatedir} -f {out_name} --force-download")   
+    #       system(command, intern = TRUE)
+    #       
+    #       r=raster(glue("{intermediatedir}/{out_name}.nc"))
+    #       r1=r^.25 ## barb's math
+    #       r2 <- raster::resample(r1, template)  
+    #       extent(r2)=extent(template)
+    #       writeRaster(r2,glue("{finaldir}/l.chl.grd"),overwrite=T)
+    #     } else{
+    #       print(glue("Not grabbing CHL data. Most recent data is from {nearest_date}, which is lagged behind target date by {how_different} days")) 
+    #     }
+    #       }
+    # 
+    #     }
+    #   },
+    #   error = function(e){
+    #     message(glue("CMEMS chl-a not available {get_date}"))
+    #     print(e)
+    #   }
+    # )
         
         tryCatch(
           expr = {
