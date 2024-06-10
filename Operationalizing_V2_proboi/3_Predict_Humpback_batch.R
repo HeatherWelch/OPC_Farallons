@@ -6,7 +6,7 @@
 ############# ----------------------------> Paths to change ################
 ## path to the top directory of this project - doesn't matter what this folder is called, but something in /home/hwelch
 # path="/Users/heatherwelch/Dropbox/OPC_Farallons/operationalization"
-path="/Users/EcoCast/Dropbox/OPC_Farallons/operationalization"
+path="/Volumes/PROBOI/Heather_working/OPC"
 
 ## path to the load libraries r script ("/loadlib-new.R") will be appended to this path in the function)
 # source_path="/Users/heatherwelch/Dropbox/OPC_Farallons/github/OPC_Farallons/Operationalizing_V1"
@@ -125,7 +125,7 @@ predict_humpback <- function(path,source_path,date_range){
 }
 
 library(tidyverse)
-date_range=seq(as.Date("2023-03-01"),Sys.Date(),by=1) %>% as.character()
+date_range=seq(as.Date("2011-01-01"),Sys.Date(),by=1) %>% as.character()
 
 # date_range=seq(as.Date("2020-05-31"),as.Date("2020-06-02"),by=1) %>% as.character()
 # date_range=seq(Sys.Date()-30,Sys.Date(),by=1) %>% as.character()
