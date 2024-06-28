@@ -13,5 +13,6 @@ cd $SOURCE_DIR
 /usr/local/bin/Rscript 3_Predict_Humpback_batch.R
 /usr/local/bin/Rscript 4_two_week_batch.R
 /usr/local/bin/Rscript 5_ramp_zone_batch.R 
+/usr/local/bin/Rscript 6_most_recent.R 
 
 
