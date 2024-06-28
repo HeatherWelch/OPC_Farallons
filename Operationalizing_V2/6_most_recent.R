@@ -39,30 +39,30 @@ most_recent <- function(path,source_path){
    ## latest epac metadata ####
    target_dir=glue("{outdir}/epac_metadata")
    final_dir=glue("{latestdir}/epac_metadata")
-   files=list.files(target_dir,full.names = T) 
-   files_dates=files %>% 
-     gsub(glue("{outdir}/epac_metadata/metadata_"),"",.) %>% 
-     gsub(".csv","",.) %>% sort() 
-   move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-     lapply(.,function(x)glue("{outdir}/epac_metadata/metadata_{x}.csv")) %>% 
-     unlist()
+   files=list.files(target_dir,full.names = T,recursive = T) 
+   # files_dates=files %>% 
+   #   gsub(glue("{outdir}/epac_metadata/metadata_"),"",.) %>% 
+   #   gsub(".csv","",.) %>% sort() 
+   move_files=files[(length(files)-30):length(files)] #%>% 
+     # lapply(.,function(x)glue("{outdir}/epac_metadata/metadata_{x}.csv")) %>% 
+     # unlist()
    
    lapply(move_files,function(x)file.copy(x,final_dir))
    
    ## latest two week metadata ####
    target_dir=glue("{outdir}/two_week_metadata")
    final_dir=glue("{latestdir}/two_week_metadata")
-   files=list.files(target_dir,full.names = T) 
+   files=list.files(target_dir,full.names = T,recursive = T) 
    
    names=c("anchovy","humpback","bluewhale","epac")
    for(i in 1:length(names)){
-     files_dates=files %>% 
-       grep(names[i],.,value=T) %>% 
-       gsub(glue("{target_dir}/{names[i]}_metadata_"),"",.) %>% 
-       gsub(".csv","",.) %>% sort() 
-     move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-       lapply(.,function(x)glue("{target_dir}/{names[i]}_metadata_{x}.csv")) %>% 
-       unlist()
+     files_dates=files %>%
+       grep(names[i],.,value=T) #%>%
+       # gsub(glue("{target_dir}/{names[i]}_metadata_"),"",.) %>%
+       # gsub(".csv","",.) %>% sort()
+     move_files=files_dates[(length(files_dates)-30):length(files_dates)] #%>% 
+       # lapply(.,function(x)glue("{target_dir}/{names[i]}_metadata_{x}.csv")) %>% 
+       # unlist()
      
      lapply(move_files,function(x)file.copy(x,final_dir))
    }
@@ -70,17 +70,17 @@ most_recent <- function(path,source_path){
    ## latest maps ####
    target_dir=glue("{outdir}/maps")
    final_dir=glue("{latestdir}/maps")
-   files=list.files(target_dir,full.names = T) 
+   files=list.files(target_dir,full.names = T,recursive = T) 
    
    names=c("anchovy","humpback","bluewhale","epac")
    for(i in 1:length(names)){
    files_dates=files %>% 
-     grep(names[i],.,value=T) %>% 
-     gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
-     gsub(".png","",.) %>% sort() 
-   move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-     lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.png")) %>% 
-     unlist()
+     grep(names[i],.,value=T) #%>% 
+     # gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
+     # gsub(".png","",.) %>% sort() 
+   move_files=files_dates[(length(files_dates)-30):length(files_dates)] #%>% 
+     # lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.png")) %>% 
+     # unlist()
    
    lapply(move_files,function(x)file.copy(x,final_dir))
    }
@@ -88,17 +88,17 @@ most_recent <- function(path,source_path){
    ## latest two week maps ####
    target_dir=glue("{outdir}/two_week_maps")
    final_dir=glue("{latestdir}/two_week_maps")
-   files=list.files(target_dir,full.names = T) 
+   files=list.files(target_dir,full.names = T,recursive = T) 
    
    names=c("anchovy","humpback","bluewhale","epac")
    for(i in 1:length(names)){
      files_dates=files %>% 
-       grep(names[i],.,value=T) %>% 
-       gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
-       gsub(".png","",.) %>% sort() 
-     move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-       lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.png")) %>% 
-       unlist()
+       grep(names[i],.,value=T) #%>% 
+       # gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
+       # gsub(".png","",.) %>% sort() 
+     move_files=files_dates[(length(files_dates)-30):length(files_dates)] #%>% 
+       # lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.png")) %>% 
+       # unlist()
      
      lapply(move_files,function(x)file.copy(x,final_dir))
    }
@@ -106,23 +106,26 @@ most_recent <- function(path,source_path){
    ## latest rasters ####
    target_dir=glue("{outdir}/rasters")
    final_dir=glue("{latestdir}/rasters")
-   files=list.files(target_dir,full.names = T,pattern=".grd") 
+   files=list.files(target_dir,full.names = T,pattern=".grd",recursive = T) 
+   files_gri=list.files(target_dir,full.names = T,pattern=".gri",recursive = T) 
    
    names=c("anchovy","humpback","bluewhale","epac")
    for(i in 1:length(names)){
      files_dates=files %>% 
-       grep(names[i],.,value=T) %>% 
-       gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
-       gsub(".grd","",.) %>% sort() 
-     move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-       lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.grd")) %>% ##grd
-       unlist()
+       grep(names[i],.,value=T) #%>% 
+       # gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
+       # gsub(".grd","",.) %>% sort() 
+     move_files=files_dates[(length(files_dates)-30):length(files_dates)] #%>% 
+       # lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.grd")) %>% ##grd
+       # unlist()
      
      lapply(move_files,function(x)file.copy(x,final_dir))
      
-     move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-       lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.gri")) %>% ##gri
-       unlist()
+     files_dates_gri=files_gri %>% 
+       grep(names[i],.,value=T)
+     move_files=files_dates_gri[(length(files_dates_gri)-30):length(files_dates_gri)] #%>% 
+       # lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.gri")) %>% ##gri
+       # unlist()
      
      lapply(move_files,function(x)file.copy(x,final_dir))
    }
@@ -130,23 +133,26 @@ most_recent <- function(path,source_path){
    ## latest two week rasters ####
    target_dir=glue("{outdir}/two_week_rasters")
    final_dir=glue("{latestdir}/two_week_rasters")
-   files=list.files(target_dir,full.names = T,pattern=".grd") 
+   files=list.files(target_dir,full.names = T,pattern=".grd",recursive = T) 
+   files_gri=list.files(target_dir,full.names = T,pattern=".gri",recursive = T) 
    
    names=c("anchovy","humpback","bluewhale","epac")
    for(i in 1:length(names)){
      files_dates=files %>% 
-       grep(names[i],.,value=T) %>% 
-       gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
-       gsub(".grd","",.) %>% sort() 
-     move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-       lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.grd")) %>% ##grd
-       unlist()
+       grep(names[i],.,value=T) #%>% 
+     # gsub(glue("{target_dir}/{names[i]}_"),"",.) %>% 
+     # gsub(".grd","",.) %>% sort() 
+     move_files=files_dates[(length(files_dates)-30):length(files_dates)] #%>% 
+     # lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.grd")) %>% ##grd
+     # unlist()
      
      lapply(move_files,function(x)file.copy(x,final_dir))
      
-     move_files=files_dates[(length(files_dates)-30):length(files_dates)] %>% 
-       lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.gri")) %>% ##gri
-       unlist()
+     files_dates_gri=files_gri %>% 
+       grep(names[i],.,value=T)
+     move_files=files_dates_gri[(length(files_dates_gri)-30):length(files_dates_gri)] #%>% 
+     # lapply(.,function(x)glue("{target_dir}/{names[i]}_{x}.gri")) %>% ##gri
+     # unlist()
      
      lapply(move_files,function(x)file.copy(x,final_dir))
    }
