@@ -137,7 +137,7 @@ predict_bluewhale <- function(path,source_path,date_range){
       scale_fill_gradientn("",colours = pals::parula(100),na.value="white")+
       geom_polygon(data = fortify(maps::map("world",plot=FALSE,fill=TRUE)), aes(x=long, y = lat, group=group),color="black",fill="grey")+
       theme_classic()+xlab(NULL)+ylab(NULL)+
-      coord_sf(xlim = c(-134, -115.5), ylim = c(30,46),expand=F)+
+      coord_sf(xlim = c(-134, -115.5), ylim = c(30,48),expand=F)+
       ggtitle(glue("Blue whale {get_date}"))+
       theme(legend.position = "bottom",
             legend.key.width = unit(1, 'cm'))
