@@ -21,6 +21,8 @@ predict_epac <- function(path,source_path,date_range){
   
   # source(paste0(source_path,"load_libraries.R"),chdir=T)
   source(paste0(source_path,"/loadlib-new.R"),chdir=T)
+  source(paste0(source_path,"/utils.R"),chdir=T)
+  
 
   envdir=glue("{path}/daily_prediction_layers")
   outdir <- glue("{path}/end_products_final")
@@ -194,7 +196,16 @@ predict_epac <- function(path,source_path,date_range){
     pred_ras=rasterFromXYZ(newpreds %>% dplyr::select(x,y,pred_mean2)) 
     pred_ras_clip=mask(pred_ras,pred_domain)
     
+    # Export raster layer
     writeRaster(pred_ras_clip,glue("{rastersdir}/{year}/{month}/epac_{get_date}.grd"),overwrite=T)
+    
+    # Export NCDF file for ERDDAP
+    export_nc(x = pred_ras_clip,
+              template = glue("{staticdir}/template.nc"),
+              get_date = get_date,
+              out_dir = glue("{rastersdir}/{year}/{month}"),
+              filename = glue("epac_{gsub(x = get_date, pattern = '-', replacement = '')}.nc"))
+    
     
     df_plot=rasterToPoints(pred_ras_clip) %>% 
       as.data.frame()
