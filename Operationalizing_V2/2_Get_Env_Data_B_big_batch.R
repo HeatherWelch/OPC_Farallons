@@ -213,7 +213,7 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
           out_name=glue("{productId}_{variable}_{get_date}")
           out_name_time_metadata=glue("{productId}_{variable}_{get_date}_metadata")
           
-          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {Sys.Date()-7} -x 5.0 -X 10.0 -y 38.0 -Y 42.0 --variable {variable} -o {intermediatedir} -f {out_name_time_metadata} --force-download")   
+          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {as_date(get_date)-7} -x 5.0 -X 10.0 -y 38.0 -Y 42.0 --variable {variable} -o {intermediatedir} -f {out_name_time_metadata} --force-download")   
           system(command, intern = TRUE)
           
           if(file.exists(glue("{intermediatedir}/{out_name_time_metadata}.nc"))){
@@ -221,7 +221,7 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
             dates=examine_times(conn=times_conn,get_date)
             nearest_date_position=dates[[1]];nearest_date=dates[[2]];how_different=dates[[3]];notation_date=dates[[4]]
           
-        if (how_different<8){
+        if (how_different < 8 & how_different >= 0){
           command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {nearest_date} -T {nearest_date} --variable {variable} -o {intermediatedir} -f {out_name} --force-download")   
           system(command, intern = TRUE)
           
@@ -230,6 +230,21 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
           r2 <- raster::resample(r1, template)  
           extent(r2)=extent(template)
           writeRaster(r2,glue("{finaldir}/l.chl.grd"),overwrite=T)
+          
+        } else if (how_different < 0) {
+          print("Downloading from multi-year product instead of NRT")
+          productId = "cmems_obs-oc_glo_bgc-plankton_my_l4-gapfree-multi-4km_P1D"
+          out_name=glue("{productId}_{variable}_{get_date}")
+          
+          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {get_date} -T {get_date} --variable {variable} -o {intermediatedir} -f {out_name} --force-download")   
+          system(command, intern = TRUE)
+          
+          r=raster(glue("{intermediatedir}/{out_name}.nc"))
+          r1=r^.25 ## barb's math
+          r2 <- raster::resample(r1, template)  
+          extent(r2)=extent(template)
+          writeRaster(r2,glue("{finaldir}/l.chl.grd"),overwrite=T)
+          
         } else{
           print(glue("Not grabbing CHL data. Most recent data is from {nearest_date}, which is lagged behind target date by {how_different} days")) 
         }
