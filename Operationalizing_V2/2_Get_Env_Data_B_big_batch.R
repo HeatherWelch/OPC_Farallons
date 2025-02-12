@@ -250,6 +250,8 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
         }
           }
  
+          # Remove metadata NCDF file for CMEMS CHL
+          file.remove(glue("{intermediatedir}/{out_name_time_metadata}.nc"))
         }
       },
       error = function(e){
