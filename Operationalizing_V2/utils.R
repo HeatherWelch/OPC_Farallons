@@ -54,3 +54,40 @@ export_nc = function(x, template, get_date, out_dir, filename) {
 
   }
 
+#--------------------------------
+
+# Function to access time metadata from CMEMS products
+
+cmems_time = function(productID, path_copernicus_marine_toolbox) {
+  
+  # Define command for querying metadata
+  command <- glue("{path_copernicus_marine_toolbox} describe -i {productID} -r coordinate_id,coordinate_unit,minimum_value,maximum_value")
+  meta <- system(command, intern = TRUE)
+  meta.json <- jsonlite::parse_json(meta)
+  
+  
+  #Access time data
+  dims <- meta.json$products[[1]]$datasets[[1]]$versions[[1]]$parts[[1]]$services[[3]]$variables[[1]]$coordinates
+  
+  # Check to see where time is stored; varies by product
+  if (dims[[1]]$coordinate_id == "time" & grepl("^milliseconds", dims[[1]]$coordinate_unit)) {
+    
+    min_date <- as_datetime(dims[[1]]$minimum_value / 1000)
+    max_date <- as_datetime(dims[[1]]$maximum_value / 1000)
+    
+  } else if (dims[[4]]$coordinate_id == "time" & grepl("^milliseconds", dims[[4]]$coordinate_unit)) {
+    
+    min_date <- as_datetime(dims[[4]]$minimum_value / 1000)
+    max_date <- as_datetime(dims[[4]]$maximum_value / 1000)
+    
+  } else {
+    stop("Need to fix bug in parsing of time")
+  }
+  
+  time_range <- c(min = min_date, max = max_date) |> 
+    as_date()
+  
+  return(time_range)
+}
+
+
