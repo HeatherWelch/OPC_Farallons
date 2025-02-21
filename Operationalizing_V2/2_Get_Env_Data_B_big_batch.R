@@ -109,19 +109,48 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
     }
     
   }
-  examine_times <- function(time_range, get_date){
+  examine_times <- function(conn, get_date){
     ## time_range = vector; the min and max dates returned by cmems_time() for productID
     ## get_date = vector; a 'Date' object for the date of interest for environ data
     
-    ntimes <- difftime(time_range[2], time_range[1], units = "days") %>% 
-      as.numeric()
-    times <- seq(time_range[1], time_range[2], by = "1 day")
+    # ntimes <- difftime(time_range[2], time_range[1], units = "days") %>% 
+    #   as.numeric()
+    # times <- seq(time_range[1], time_range[2], by = "1 day")
+    # 
+    # nearest_date_position <- which.min(abs(times - as_date(get_date)))
+    # nearest_date <- times[nearest_date_position] 
+    # how_different <- difftime(as_date(get_date), nearest_date, units = "days") %>%  
+    #   as.numeric()
+    # notation_date <- nearest_date
+    ntimes=conn$dim$time$len
+    times=conn$dim$time$vals
+    timeUnits=conn$dim$time$units
+    tulen=nchar(timeUnits)
+    punct=substr(timeUnits,tulen-2,tulen-2)
+    tinc=substr(timeUnits,1,10)
+    # days_since yyyy-mm-dd
+    if(tinc=="days since"){
+      if(punct=="-")timeOrigin=substr(timeUnits,tulen-9,tulen) ## for time units like "days since yyyy-mm-dd"
+      if(punct==":")timeOrigin=substr(timeUnits,tulen-18,tulen-9) ## for time units like "days since yyyy-mm-dd 00:00:00"
+      times_date=as.Date(times,origin = timeOrigin)
+    }
+    # seconds since yyyy-mm-dd hh:mm:ss
+    if(tinc=="seconds si"){
+      if(punct=="-")timeOrigin=substr(timeUnits,tulen-9,tulen) ## for time units like "seconds since yyyy-mm-dd"
+      if(punct==":")timeOrigin=substr(timeUnits,tulen-18,tulen-9) ## for time units like "seconds since 1981-01-01 00:00:00"
+      times_date=as.POSIXct(times,origin = timeOrigin,tz = "UTC") %>% as.Date()
+    }
+    # hours since yyyy-mm-dd hh:mm:ss
+    if(tinc=="hours sinc"){
+      if(punct=="-")timeOrigin=substr(timeUnits,tulen-9,tulen) ## for time units like "hours since yyyy-mm-dd"
+      if(punct==":")timeOrigin=substr(timeUnits,tulen-18,tulen-9) ## for time units like "hours since 1981-01-01 00:00:00"
+      times_date=as.POSIXct(times*3600,origin = timeOrigin,tz = "UTC") %>% as.Date()
+    }
     
-    nearest_date_position <- which.min(abs(times - as_date(get_date)))
-    nearest_date <- times[nearest_date_position] 
-    how_different <- difftime(as_date(get_date), nearest_date, units = "days") %>%  
-      as.numeric()
-    notation_date <- nearest_date	
+    nearest_date_position=(which.min(abs(times_date-as.Date(get_date))))
+    nearest_date=times_date[nearest_date_position] 
+    how_different=difftime(as.Date(get_date),nearest_date,units = "days") %>% as.numeric(.,units="days")# %>% round() %>%  as.character()
+    notation_date=nearest_date
     
     return(list(nearest_date_position, nearest_date, how_different, notation_date))
     
@@ -194,13 +223,21 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
           productId = "cmems_obs-oc_glo_bgc-plankton_nrt_l4-gapfree-multi-4km_P1D"
           variable <- c("CHL")
           out_name=glue("{productId}_{variable}_{get_date}")
+          out_name_time_metadata=glue("{productId}_{variable}_{get_date}_metadata")
           
+          
+          command <- glue("{path_copernicus_marine_toolbox} subset -i {productId} -t {as_date(get_date)-7} -x 5.0 -X 10.0 -y 38.0 -Y 42.0 --variable {variable} -o {intermediatedir} -f {out_name_time_metadata} --force-download")   
+          system(command, intern = TRUE)
+          
+          if(file.exists(glue("{intermediatedir}/{out_name_time_metadata}.nc"))){
+            times_conn=nc_open(glue("{intermediatedir}/{out_name_time_metadata}.nc"))
+            dates=examine_times(conn=times_conn,get_date)
           # Query time range for productID
-          time_range <- cmems_time(productID = productId,
-                                   path_copernicus_marine_toolbox = path_copernicus_marine_toolbox)
+          # time_range <- cmems_time(productID = productId,
+          #                          path_copernicus_marine_toolbox = path_copernicus_marine_toolbox)
           
           # Store time vars as objects
-          dates <- examine_times(time_range = time_range, get_date = get_date)
+          # dates <- examine_times(time_range = time_range, get_date = get_date)
           nearest_date_position=dates[[1]];nearest_date=dates[[2]];how_different=dates[[3]];notation_date=dates[[4]]
           
         if (how_different < 8 & how_different >= 0){
@@ -230,6 +267,10 @@ Get_Env_Data_B_batch=function(path,source_path,date_range){
         } else{
           print(glue("Not grabbing CHL data. Most recent data is from {nearest_date}, which is lagged behind target date by {how_different} days")) 
         }
+          
+          # Remove metadata NCDF file for CMEMS CHL
+          file.remove(glue("{intermediatedir}/{out_name_time_metadata}.nc"))
+          }
          
         }
       },
