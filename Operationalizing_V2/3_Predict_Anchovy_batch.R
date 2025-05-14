@@ -103,7 +103,7 @@ predict_anchovy <- function(path,source_path,date_range){
     
     newpreds=stack(bv,ild,ssh,sst,logEKE,sst_sd,ssh_sd,chl4th,distland2,lunar) %>% 
       rasterToPoints() %>% as.data.frame() %>% 
-      mutate(ssb=3548420) %>% 
+      mutate(ssb=3960977) %>% 
       mutate(preds=predict(anchGAM,., type = "response"))
     
     pred_ras=rasterFromXYZ(newpreds %>% dplyr::select(x,y,preds))
